@@ -3,11 +3,14 @@ title: "PPOL564 Final Project: Predicting Election Results"
 author: "Colette Yeager"
 subtitle: 'Word Count: '
 fontsize: 12pt
-output:   
-  pdf_document: default
+output: 
+  pdf_document:
+    extra_dependencies: ["float"]
   html_document:
     df_print: paged
   word_document: default
+header-includes: 
+- \usepackage{float}
 ---
 
 ```{r setup, include=FALSE, message = FALSE, warning = FALSE}
@@ -15,6 +18,10 @@ library(reticulate)
 options(reticulate.repl.quiet = TRUE)
 # Remove previous objects in the environment
 rm(list = ls(all = TRUE)) 
+```
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(fig.pos = 'H')
 ```
 
 ```{python, include=FALSE, message = FALSE, warning = FALSE}
@@ -135,12 +142,61 @@ After all of my data had been pulled and organized, I merged them into one large
 
 ## Analysis
 
+Looking at the data, you can see that there is some missing data from the Popular Vote and Change in GDP columns:
 
-In running my statistical models, I looked at a couple different versions of my data to compare results. In general, I used vote share as my dependent variable, but switched off between using Electoral College and Popular Vote as I wanted to be able to look at them both individually. In my opinion, Popular Vote is a better measure of vote share in this situation as it more closely reflects the patterns and decisions of the actual voters, which ties in more closely to my independent variables. However, this wasn't measured until 1824, so I wanted to look at Electoral College as well to have more data points for my assessment.
+![Missing Data](/Users/coletteyeager/Desktop/Code/PPOL564_FinalProject/Data/Figures/Missing_Data.png)
+
+This is the case as these two features weren't really measured until a certain point in time. Since these two variables were pretty important to my analysis, I didn't want to just get rid of them, but also didn't want to only look at rows that had all data present. Therefore, I decided to create a couple different versions of my data to compare results of my models. In general, I used vote share as my dependent variable, but switched off between using Electoral College and Popular Vote as I wanted to be able to look at them both individually. In my opinion, Popular Vote is a better measure of vote share in this situation as it more closely reflects the patterns and decisions of the actual voters, which ties in more closely to my independent variables. However, this wasn't measured until 1824, so I wanted to look at Electoral College as well to have more data points for my assessment. You can see from Figure x below that there were some differences in the trends between the two measures of vote share.
+
+![Election Results](/Users/coletteyeager/Desktop/Code/PPOL564_FinalProject/Data/Figures/election_results.png){height=40%}
+
+I also created a subset that only included the points where change in GDP was measured - I knew that it would be a more limited dataset, but as economic growth has previously been a very significant measure of election results, I wanted to be able to look at it as well.
+
+Finally, I created two subsets where one included the swing states found from a historical view and the other with more current swing states, to be able to see which model was more accurate. As seen from the heatmap below (Figure x), it appeared that the historical states had a larger number of accurate votes by party, but I wanted to be able to run the model and determine if that was correct.
+
+```{r, echo=FALSE,out.width="60%", out.height="40%",fig.cap="Overall and Accurate Swing States",fig.show='hold',fig.align='center'}
+knitr::include_graphics(c("/Users/coletteyeager/Desktop/Code/PPOL564_FinalProject/Data/Figures/Overall_Swing.png","/Users/coletteyeager/Desktop/Code/PPOL564_FinalProject/Data/Figures/Accurate_Swing.png"))
+``` 
+
+I then took a look at some of the trends in the variables to get a sense of what my results might look like. The only real continuous independent variables were Change in GDP and Turnout Rate, so I looked to see whether there were any clear patterns there.
+
+![GDP by Vote Share](/Users/coletteyeager/Desktop/Code/PPOL564_FinalProject/Data/Figures/gdp_by_share.png)
+
+![Turnout Rate by Vote Share](/Users/coletteyeager/Desktop/Code/PPOL564_FinalProject/Data/Figures/turnout_by_share.png)
+
+It did look like there were some slight trends from these graphs, with Figure (2?) having a negative correlation and Figure (3?) having a positive correlation. I also took a look at some of the interactions with the dummy variables, such as how political party and incumbent status interact with the relationship between change in GDP and vote share as seen below in Figures (4?) and (5?). 
+
+![GDP by Vote Share by Party](/Users/coletteyeager/Desktop/Code/PPOL564_FinalProject/Data/Figures/gdp_party_share.png)
+
+There were some clear trends here, and you can see how including interaction variables in the model would likely give some more accurate results. In further analyses of this project, I would add in actual interaction variables into my dataset and see how it affects the model.
+
+For the actual modeling section of my analysis, as my dependent variables were continuous, I had to choose models that weren't just focused on classification. Therefore, I included a Linear model, a Bagging model, K-Nearest neighbors, Decision Trees, and Random Forests in my search space. The scoring parameter I decided to use is `neg_mean_squared_error` because it is relatively simple to interpret - the lower the score, the better the fit, and the square root of this number will approximately represent the average distance between the predicted values and the actual values of the dependent variable. Because of my relatively low sample size, I split my data into training and testing data with 80% of the data going into the training set and only 20% in the testing set. 
 
 ## Results
 
+When I ran each of my models using the different subsets I created, I found that there were pretty different levels of accuracy depending on the subset. 
+* Discuss relative scores for each model and how the swing states compared
+
+
+* talk about the model interpretation, used the gdp data since it was the most accurate
+
+In looking at the features, used permutation_importance with my most accurate model to look at the relative importance of each of my variables
+
+![Variable Importance](/Users/coletteyeager/Desktop/Code/PPOL564_FinalProject/Data/Figures/variable_importance.png)
+![Variable Importance](/Users/coletteyeager/Desktop/Code/PPOL564_FinalProject/Data/Figures/Feature_dependence.png)
+
+![Variable Importance](/Users/coletteyeager/Desktop/Code/PPOL564_FinalProject/Data/Figures/ice_plot.png)
+
+Found that change in gdp, turnout rate, and incumbent were most important, which made sense with previous studies and was pretty cool
+Looking at the distribution of partial dependence of variables was interesting, had some very non-linear changes
+
 ## Discussion
+
+There were definitely some not great values for some of these models, r^2 is pretty low - with more time, I would plot out the relationship between the predicted values and the actual values and see if there are any trends in the years that have the least accurate predicted values - possible that there are some patterns that have to do with the specific features, or maybe current events
+
+What does it mean that gdp data was the most accurate? probably that things have been more consistent in more recent years, and so more discernable patterns
+
+
 
 ## Works Cited
 
